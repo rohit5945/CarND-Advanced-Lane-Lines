@@ -3,7 +3,9 @@
 ## Rohit Kukreja
 
 **Youtube video**
-[![Youtube Video]("output_images/hqdefault.jpg")](https://www.youtube.com/watch?v=E9UsSixMfNk)
+
+
+[![Link](output_images/hqdefault.jpg)](https://www.youtube.com/watch?v=E9UsSixMfNk)
 
 
  Goal of the project is  to write a software pipeline to identify the lane boundaries in a video.
@@ -33,11 +35,11 @@ The first step we will take is to find the calibration matrix, along with distor
 
 To compute the camera the transformation matrix and distortion coefficients, we use a multiple pictures of a chessboard on a flat surface taken by the same camera. OpenCV has a convenient method called findChessboardCorners that will identify the points where black and white squares intersect and reverse engineer the distorsion matrix this way. The image below shows the identified chessboard corners traced on a sample image
 
-![Camera Calibration]("output_images/found_chessboard_corners.png")
+![Camera Calibration](output_images/found_chessboard_corners.png)
 
 We can see that corners are very well identified. Next we run our chessboard finding algorithm over multiple chessboard images taken from different angles to identify image and object points to calibrate the camera. The former refers to coordinates in our 2D mapping while the latter represents the real-world coordinates of those image points in 3D space (with z axis, or depth = 0 for our chessboard images). Those mappings enable us to find out how to properly undistort an image taken from the same camera. You can witness it's effectiveness on the image below.
 
-![Undistorted]("output_images/distorted_vs_undistorted_chessboard_images.png")
+![Undistorted](output_images/distorted_vs_undistorted_chessboard_images.png)
 
 
 ## Gradient and Color thresholding ##
@@ -50,32 +52,32 @@ Steps:
 3. Perform gradient on L-channel and color thresholding on L- channel
 4. create a binary image using OR(|) for both the thresholds.
 
-![color gradient]("output_images/color_gradient_image.jpg")
+![color gradient](output_images/color_gradient_image.jpg)
 
 ## Perspective Transformation##
 
 Perspective transformation is done for better detecting the curved lanes.
 We do a transformation to birds eye view .
 
-![perspective transform]("output_images/perspective_image.jpg")
+![perspective transform](output_images/perspective_image.jpg)
 
 ## Polynomial fitting ##
 
 Fit a second degree polynomial to the detected lanes using the sliding window transformations.
 
-![polynomial]("output_images/polynomial_image.jpg")
+![polynomial](output_images/polynomial_image.jpg)
 
 ## Warp image##
 
 Convert the image form birds eye view to the image world using inverse perspective tranformation and warp on the bas image.
 
-![warp]("output_images/final.jpg")
+![warp](output_images/final_image.jpg)
 
 ## Radius of curvature ##
 
 Calculate the radius of curvature of left and right lane and map onto image.
 
-![radius]("output_images/final.jpg")
+![radius](output_images/final_image.jpg)
 
 
 
