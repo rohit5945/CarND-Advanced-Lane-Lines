@@ -1,16 +1,14 @@
-## Advanced Lane Finding
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
-![Lanes Image](./examples/example_output.jpg)
+## **Advanced Lane Line Detection***
 
-In this project, your goal is to write a software pipeline to identify the lane boundaries in a video, but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
+## Rohit Kukreja
 
-Creating a great writeup:
----
-A great writeup should include the rubric points as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
+**Youtube video**
+[![Link]("/output_images/hqdefault.jpg")](https://www.youtube.com/watch?v=E9UsSixMfNk)]
 
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
+ Goal of the project is  to write a software pipeline to identify the lane boundaries in a video.
+ Check out the [Github](https://github.com/rohit5945/CarND-Advanced-Lane-Lines) for this project   
+
 
 The Project
 ---
@@ -28,12 +26,57 @@ The goals / steps of this project are the following:
 
 The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames.  If you want to extract more test images from the videos, you can simply use an image writing method like `cv2.imwrite()`, i.e., you can read the video in frame by frame as usual, and for frames you want to save for later you can write to an image file.  
 
-To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `output_images`, and include a description in your writeup for the project of what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
 
-The `challenge_video.mp4` video is an extra (and optional) challenge for you if you want to test your pipeline under somewhat trickier conditions.  The `harder_challenge.mp4` video is another optional challenge and is brutal!
+## Camera Calibration##
 
-If you're feeling ambitious (again, totally optional though), don't stop there!  We encourage you to go out and take video of your own, calibrate your camera and show us how you would implement this project from scratch!
+The first step we will take is to find the calibration matrix, along with distortion coefficient for the camera that was used to take pictures of the road. This is necessary because the convex shape of camera lenses curves light rays as the enter the pinhole, therefore causing distortions to the real image. Therefore lines that are straight in the real world may not be anymore on our photos.
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+To compute the camera the transformation matrix and distortion coefficients, we use a multiple pictures of a chessboard on a flat surface taken by the same camera. OpenCV has a convenient method called findChessboardCorners that will identify the points where black and white squares intersect and reverse engineer the distorsion matrix this way. The image below shows the identified chessboard corners traced on a sample image
+
+![Camera Calibration]("/output_images/found_chessboard_corners.png")
+
+We can see that corners are very well identified. Next we run our chessboard finding algorithm over multiple chessboard images taken from different angles to identify image and object points to calibrate the camera. The former refers to coordinates in our 2D mapping while the latter represents the real-world coordinates of those image points in 3D space (with z axis, or depth = 0 for our chessboard images). Those mappings enable us to find out how to properly undistort an image taken from the same camera. You can witness it's effectiveness on the image below.
+
+![Undistorted]("/output_images/distorted_vs_undistorted_chessboard_images.png")
+
+
+## Gradient and Color thresholding ##
+
+After calibrating the input images we do a thresholding on the image using the gradient on different color channels.
+
+Steps:
+1. Convert from RGB to HLS 
+2. take the S-channel and L-channel
+3. Perform gradient on L-channel and color thresholding on L- channel
+4. create a binary image using OR(|) for both the thresholds.
+
+![color gradient]("/output_images/color_gradient_image.jpg")
+
+## Perspective Transformation##
+
+Perspective transformation is done for better detecting the curved lanes.
+We do a transformation to birds eye view .
+
+![perspective transform]("/output_images/perspective_image.jpg")
+
+## Polynomial fitting ##
+
+Fit a second degree polynomial to the detected lanes using the sliding window transformations.
+
+![polynomial]("/output_images/polynomial_image.jpg")
+
+## Warp image##
+
+Convert the image form birds eye view to the image world using inverse perspective tranformation and warp on the bas image.
+
+![warp]("/output_images/final.jpg")
+
+## Radius of curvature ##
+
+Calculate the radius of curvature of left and right lane and map onto image.
+
+![radius]("/output_images/final.jpg")
+
+
+
 
