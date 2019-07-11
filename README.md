@@ -52,7 +52,7 @@ Steps:
 3. Perform gradient on L-channel and color thresholding on L- channel
 4. create a binary image using OR(|) for both the thresholds.
 
-![color gradient](output_images/color_gradient_image.jpg)
+![color gradient](output_images/combined_sobels_and_hls_thresholding_images.png)
 
 ## Perspective Transformation##
 
@@ -76,7 +76,7 @@ src=np.float32(
          [300, 0]
         ])
 
-![perspective transform](output_images/perspective_image.jpg)
+![perspective transform](output_images/binary_thresholded_vs_histogram.png)
 
 ## Polynomial fitting ##
 
