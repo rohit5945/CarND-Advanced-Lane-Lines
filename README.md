@@ -5,7 +5,7 @@
 **Youtube video**
 
 
-[![Link](output_images/hqdefault.jpg)](https://www.youtube.com/watch?v=E9UsSixMfNk)
+[![Link](output_images/hqdefault.jpg)](https://www.youtube.com/watch?v=do4d6ciqHyw)
 
 
  Goal of the project is  to write a software pipeline to identify the lane boundaries in a video.
@@ -58,24 +58,57 @@ Steps:
 
 Perspective transformation is done for better detecting the curved lanes.
 We do a transformation to birds eye view .
+We now need to define a trapezoidal region in the 2D image that will go through a perspective transform to convert into a bird's eye view.
+
+We then define 4 extra points which form a rectangle that will map to the pixels in our source trapezoid:
+
+src=np.float32(
+        [[690, 450],
+         [1110, 720],
+         [175, 720],
+         [595, 450]
+        ])
+    #desired coordinates
+    dsrd=np.float32(
+        [[980, 0],
+         [980, 720],
+         [300, 720],
+         [300, 0]
+        ])
 
 ![perspective transform](output_images/perspective_image.jpg)
 
 ## Polynomial fitting ##
 
-Fit a second degree polynomial to the detected lanes using the sliding window transformations.
+Since we now know the starting x position of pixels most likely to yield a lane line, we run a sliding windows search in an attempt to "capture" the pixel coordinates of our lane lines.
+
+From then, it is we simply compute a second degree polynomial, via numpy's polyfit, to find the coefficients of the curves that best fit the left and right lane lines.
+
+One way we improve the algorithm is by saving the previously computed coefficients for frame t-1 and attempt to find our lane pixels from those coefficients. However, when we do not find enough lane line pixels (less than 85% of total non zero pixels), we revert to sliding windows search to help improve our chances of fitting better curves around our lane.
 
 ![polynomial](output_images/polynomial_image.jpg)
 
 ## Warp image##
 
-Convert the image form birds eye view to the image world using inverse perspective tranformation and warp on the bas image.
+Finally, we draw the inside the of the lane in green and unwarp the image, thus moving from bird's eye view to the original image. . We also add textual information about lane curvature and vehicle's center position:
 
 ![warp](output_images/final_image.jpg)
 
 ## Radius of curvature ##
 
-Calculate the radius of curvature of left and right lane and map onto image.
+We also compute the lane curvature by calculating the radius of the smallest circle that could be a tangent to our lane lines - on a straight lane the radius would be quite big. We have to convert from pixel space to meters (aka real world units) by defining the appropriate pixel height to lane length and pixel width to lane width ratios:
+
+**Height ratio: 32 meters / 720 px**
+self.ym_per_px = self.real_world_lane_size_meters[0] / self.img_dimensions[0]
+
+**Width ratio: 3.7 meters / 800 px**
+self.xm_per_px = self.real_world_lane_size_meters[1] / self.lane_width_px
+
+I tried to manually estimate the length of the road on my bird's eye view images by referring to data from this resource: every time a car has travelled it has passed 40 feet (around 12.2 meters).
+
+Moreover, you can find more information on the mathematical underpinnings of radius of curvature via the following link.
+
+We also compute the car's distance from the center of the lane by offsetting the average of the starting (i.e. bottom) coordinates for the left and right lines of the lane, subtract the middle point as an offset and multiply by the lane's pixel to real world width ratio.
 
 ![radius](output_images/final_image.jpg)
 
